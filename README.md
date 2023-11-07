@@ -16,3 +16,6 @@ note max range means i used for example from left only 1 number so check with 1 
 ![image](https://github.com/MahmoudHegazi/difchecker1/assets/55125302/e451d742-eb6d-4255-b713-810ba2b7a5fa)
 
 
+confirm again
+
+![image](https://github.com/MahmoudHegazi/difchecker1/assets/55125302/db5c2f27-67ef-4cdc-a7f4-4a46aaebe0a0)
