@@ -50,3 +50,27 @@ what added included in last index steps and within algo but i not focused on it 
 !other note I tried this algo with small numbers and tested 4 times it worked in the 4 times and reach answer logicaly so even if not worked with other sanerio the question would be why it worked 4 times logicaly and not worked with other sanerios?
 
 
+
+### max range
+
+in other words max range is the slice of right side
+
+example
+
+i loop of left side notes not real code but preperareion when write if will be more clear
+``` javascript
+[1,2,3], [2,3,1]
+
+[1,2,3].forEach( (litem, i)=>{
+   const maxRange = [2,3,1].slice(i-1, i);
+   // note previous const always result in 1 item, next check will take all items after current litem to get the next ranges here max range will be more items
+0
+ 
+[1,2,3].slice(i+1).forEach( (nextlItem, ni)=>{
+  //const maxrange = [2,3,1].slice(laststopedindex,ni+1);
+   // here ni+1 is what means of max range which means you allow to check from right side until this part only
+});
+1
+  
+});
+```
