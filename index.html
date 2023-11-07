@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+  <style>
+  .modal-dialog.w90 {
+    max-width: 90%;
+  }
+  
+  .mh-500 {
+    min-height: 500px;
+    max-height: 500px;
+    overflow: auto;
+  }
+  
+  .mh-450 {
+    min-height: 450px;
+    max-height: 450px;
+    overflow: auto;
+  }
+  
+  .line_index, .line_content {
+      font-size: 13px;
+      line-height: 16px;
+  }
+
+  .line_index {
+    min-width: 8%;
+    border: 1px solid #afaaaacc;
+    background: #d3d3d3c2;
+    text-align: right;
+    padding-right: 2px;
+  }
+  
+  .line_content {
+    padding-left: 4px;
+    text-wrap: no-wrap;
+  }
+  </style>
+</head>
+<body>
+
+<div class="container-fluid">
+
+
+  <!-- Button to Open the Modal -->
+  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+    Open modal
+  </button>
+
+  <!-- The Modal -->
+    <div class="" id="difModal">
+        <div class="modal-dialog modal-xl w90">
+          <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+              <h4 class="modal-title text-primary" id="device_title"></h4>
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+              <div class="d-flex justify-content-between">
+               <div class="custom-control custom-switch">
+                 <label class="custom-control-label" for="customSwitch1">Dif View</label>
+                 <input type="checkbox" class="custom-control-input" id="customSwitch1" >
+                </div>
+                <div>
+                  <span>Deleted:<span id="deleted">0</span></span>
+                  <span>Added:<span id="added">0</span></span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6 border border-secondary mh-500 p-0">
+                 <div class="mb-2 p-1 d-flex justify-content-between align-items-center">
+                   <input type="date" id="date_input1" onchange="" />
+                   <button class="btn btn-primary btn-sm">Download</button>
+                 </div>
+                 <div class="mh-450" id="loader_1">
+
+                 </div>
+                </div>
+                <div class="col-sm-6 border border-secondary mh-500 p-0">
+                 <div class="mb-2 p-1 d-flex justify-content-between align-items-center">
+                   <input type="date" id="date_input2" onchange="" />
+                   <button class="btn btn-primary btn-sm">Download</button>
+                 </div>
+                 <div class="mh-450" id="loader_2">
+
+                 </div>
+                </div>
+              </div>  
+            </div>
+            <!-- Modal footer -->
+            <div class="modal-footer">
+              <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+    </div>
+  
+</div>
+
+<script>
+
+  
+  const difObj = {
+     file1Ready: false,
+     file2Ready: false,
+     totalDeleted: 0,
+     totalAdded: 0,
+     textFile1: `1
+2
+3
+5
+1`,
+     arrFile1: [],
+     arrTFile1: [],
+     textFile2: `1
+5
+3
+4
+0
+1`,
+     arrFile2: [],
+     arrTFile2: [],
+     
+     setArr: (target=1)=>{
+       if (target == 1){
+         difObj.textFile1.split("\n").forEach((line)=>{
+           difObj.arrFile1.push({text: line, class: ''});
+         });
+       } else {
+         difObj.textFile2.split("\n").forEach((line)=>{
+           difObj.arrFile2.push({text: line, class: ''});
+         });
+       }
+     
+     },
+     filTexts: ()=>{
+         difObj.arrTFile1 = [];
+         difObj.arrTFile2 = [];
+         difObj.arrFile1.forEach((line)=>{
+           difObj.arrTFile1.push(line.text);
+         });
+         difObj.arrFile2.forEach((line)=>{
+           difObj.arrTFile2.push(line.text);
+         });
+     },
+     loadLines: (target=1)=>{
+       const selectedLoader = target == 1 ? '#loader_1' : '#loader_2';
+       const selectedArr = target == 1 ? difObj.arrFile1 : difObj.arrFile2;
+       
+       if (target == 1){
+         difObj.file2Ready = true;
+       } else {
+         difObj.file1Ready = true;
+       }
+       if ($(selectedLoader).length && selectedArr.length){
+         let linesTxt = '';
+         selectedArr.forEach((line, i)=>{
+           linesTxt += `<div class="d-flex justify-content-start align-items-stretch">
+             <div class="line_index">${i+1}</div>
+             <div class="line_content ${line.class}">${line.text}</div>
+           </div>`;
+         });
+         $(selectedLoader).html(linesTxt);
+       }
+     },
+     isUpdate: (line1)=>{
+       
+     },
+     checkDif: ()=>{
+        if (difObj.file1Ready && difObj.file2Ready){
+        
+          difObj.filTexts();
+          // add first
+          difObj.arrFile2.forEach((line2, index2)=>{
+             //console.log(line2.text);
+             let line1 = null;
+             if (difObj.arrFile1.length > index2){
+               line1 = difObj.arrFile1[index2];
+             }
+             if (line1 !== null){
+
+               if (!difObj.arrTFile1.includes(line2.text)){
+                 console.log('hi', index2+1);
+                 line2.class = "bg-success text-white";
+                 difObj.totalAdded += 1;
+               }
+             }
+          });
+          
+          
+          // delete
+          
+          difObj.arrFile1.forEach((line1, index1)=>{
+             let line2 = null;
+             if (difObj.arrFile2.length > index1){
+               line2 = difObj.arrFile2[index1];
+             }
+             if (line2 !== null) {
+               let notexist = false;
+
+               if (!difObj.arrTFile2.includes(line1.text)){
+                 notexist = true;
+               }
+               
+               if (notexist){
+                 //difObj.arrFile1.splice(index1, 1);
+                 line1.class = 'bg-danger text-white';
+                 difObj.totalDeleted += 1;
+               }
+               
+             } else {
+                 if (!difObj.arrTFile2.includes(line1.text)){
+                    line1.class = 'bg-danger text-white';
+                    difObj.totalDeleted += 1;
+                 }
+                 
+             }
+          });
+          difObj.loadLines(1);
+          difObj.loadLines(2);
+          if ($("#deleted").length && $("#added").length){
+            $("#deleted").text(difObj.totalDeleted);
+            $("#added").text(difObj.totalAdded);
+          }
+        }
+     }
+  }
+  
+  difObj.setArr(1);
+  difObj.setArr(2);
+  difObj.loadLines(1);
+  difObj.loadLines(2);
+  //console.log(difObj.arrFile1);
+  difObj.checkDif();
+  
+  
+  
+</script>
+
+</body>
+</html>
