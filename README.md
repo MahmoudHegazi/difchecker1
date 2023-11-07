@@ -19,3 +19,10 @@ note max range means i used for example from left only 1 number so check with 1 
 confirm again
 
 ![image](https://github.com/MahmoudHegazi/difchecker1/assets/55125302/db5c2f27-67ef-4cdc-a7f4-4a46aaebe0a0)
+
+
+all things contains in max range and last stop and performance solution, note if not used performance solution in some tricky case like previous image may preduce other valid answer but checkdif.com use performance solution as well so it valid
+
+# notes:
+
+* performance solution when max range 2 or heighr not start with current left index
