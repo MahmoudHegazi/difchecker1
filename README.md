@@ -9,7 +9,7 @@ ex2
 ![image](https://github.com/MahmoudHegazi/difchecker1/assets/55125302/9dc4362b-5cc3-4815-b304-b7afdf472ab8)
 
 
-rule2:
+rule2 (the right algo (max range) ) :
 
 note max range means i used for example from left only 1 number so check with 1 v 1, or used 2 so check with 2 v 2 in programing the length of numbers used or index of last number on left used
 
