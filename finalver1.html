@@ -1,4 +1,3 @@
-<!-- inspered from difcheck anslsysis answer but this better same result, simpler, faster vanila js. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -128,7 +127,7 @@ const difObj = {
     arrFile1: [],
     arrTFile1: [],
     textFile2: `1
-5`,
+2`,
     arrFile2: [],
     arrTFile2: [],
 
@@ -272,12 +271,9 @@ const difObj = {
                     }
 
                 } else {
-                  alert('here'+ line1.class + line1.text + status);
-                                  if (status == 'removed_updated' && line1.class == ''){
-                alert("me"+JSON.stringify(line1));
-                  line1.class = 'bg-danger text-white';
-                }
-                
+                            if (line1.class == ''){
+                                    line1.class = 'bg-danger text-white';
+                                  }
                 
                 }
 
