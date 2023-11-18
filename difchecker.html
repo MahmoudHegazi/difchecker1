@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+  <style>
+  .modal-dialog.w90 {
+    max-width: 90%;
+  }
+  
+  .mh-500 {
+    min-height: 500px;
+    max-height: 500px;
+    overflow: auto;
+  }
+  
+  .mh-450 {
+    min-height: 450px;
+    max-height: 450px;
+    overflow: auto;
+  }
+  
+  .line_index, .line_content {
+      font-size: 13px;
+      line-height: 16px;
+  }
+
+  .line_index {
+    min-width: 8%;
+    border: 1px solid #afaaaacc;
+    background: #d3d3d3c2;
+    text-align: right;
+    padding-right: 2px;
+  }
+  
+  .line_content {
+    padding-left: 4px;
+    text-wrap: no-wrap;
+  }
+  </style>
+</head>
+<body>
+
+<div class="container-fluid">
+
+
+  <!-- Button to Open the Modal -->
+  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+    Open modal
+  </button>
+
+  <!-- The Modal -->
+    <div class="" id="difModal">
+        <div class="modal-dialog modal-xl w90">
+          <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+              <h4 class="modal-title text-primary" id="device_title"></h4>
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+              <div class="d-flex justify-content-between">
+               <div class="custom-control custom-switch">
+                 <label class="custom-control-label" for="customSwitch1">Dif View</label>
+                 <input type="checkbox" class="custom-control-input" id="customSwitch1" >
+                </div>
+                <div>
+                  <span>Deleted:<span id="deleted">0</span></span>
+                  <span>Added:<span id="added">0</span></span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6 border border-secondary mh-500 p-0">
+                 <div class="mb-2 p-1 d-flex justify-content-between align-items-center">
+                   <input type="date" id="date_input1" onchange="" />
+                   <button class="btn btn-primary btn-sm">Download</button>
+                 </div>
+                 <div class="mh-450" id="loader_1">
+
+                 </div>
+                </div>
+                <div class="col-sm-6 border border-secondary mh-500 p-0">
+                 <div class="mb-2 p-1 d-flex justify-content-between align-items-center">
+                   <input type="date" id="date_input2" onchange="" />
+                   <button class="btn btn-primary btn-sm">Download</button>
+                 </div>
+                 <div class="mh-450" id="loader_2">
+
+                 </div>
+                </div>
+              </div>  
+            </div>
+            <!-- Modal footer -->
+            <div class="modal-footer">
+              <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+    </div>
+  
+</div>
+
+<script>
+/*
+5
+3
+4
+0
+1
+*/
+/*
+5
+3
+4
+0
+1
+*/
+function matchPrecentage(first='',second=''){
+    let matchOrderI = 0;
+    for (let firstI=0; firstI <first.length; firstI++){
+        if (second.length > firstI){
+            if (first[firstI] == second[firstI]){
+                matchOrderI += 1;
+            }
+        }
+    }
+    // (math of text.contains method but ordered (by using first.length), can also get max list of first,second
+    let max = (first.length >= second.length) ? first.length : second.length;
+    let precentage = Math.floor((matchOrderI / max) * 100);
+    if (matchOrderI == first.length && precentage < 51){
+      precentage = 51;
+    }
+
+    return precentage;
+}
+
+const difObj = {
+    file1Ready: false,
+    file2Ready: false,
+    totalDeleted: 0,
+    totalAdded: 0,
+    textFile1: `1
+2
+4
+e
+x
+t
+Hello World
+r
+a`,
+    arrFile1: [],
+    arrTFile1: [],
+    textFile2: `1
+2
+7
+Hello World1`,
+    arrFile2: [],
+    arrTFile2: [],
+
+    setArr: (target = 1) => {
+        if (target == 1) {
+            difObj.textFile1.split("\n").forEach((line) => {
+                difObj.arrFile1.push({
+                    text: line,
+                    class: '',
+                    status: ''
+                });
+            });
+        } else {
+            difObj.textFile2.split("\n").forEach((line) => {
+                difObj.arrFile2.push({
+                    text: line,
+                    class: '',
+                    status: ''
+                });
+            });
+        }
+
+    },
+    filTexts: () => {
+        difObj.arrTFile1 = [];
+        difObj.arrTFile2 = [];
+        difObj.arrFile1.forEach((line) => {
+            difObj.arrTFile1.push(line.text);
+        });
+        difObj.arrFile2.forEach((line) => {
+            difObj.arrTFile2.push(line.text);
+        });
+    },
+    loadLines: (target = 1) => {
+        const selectedLoader = target == 1 ? '#loader_1' : '#loader_2';
+        const selectedArr = target == 1 ? difObj.arrFile1 : difObj.arrFile2;
+
+        if (target == 1) {
+            difObj.file2Ready = true;
+        } else {
+            difObj.file1Ready = true;
+        }
+        if ($(selectedLoader).length && selectedArr.length) {
+            let linesTxt = '';
+            selectedArr.forEach((line, i) => {
+                linesTxt += `
+                <div class="d-flex justify-content-start align-items-stretch" title="${line.status}">
+                  <div class="line_index">${i+1}</div>
+                  <div class="line_content ${line.class}">${line.text}</div>
+                </div>`;
+            });
+            $(selectedLoader).html(linesTxt);
+        }
+    },
+    nestedLoopCheck: (index1,index2=null) => {
+                        let status = 'removed_or_add_order_index_issue';
+                        if (index2 === null){
+                          index2 = index1;
+                        }
+
+                        const leftList = difObj.arrFile1.slice(index1);
+                        const rightList = difObj.arrFile2.slice(index2)
+                        
+                        
+                        let leftLoop = true;
+                        let lastRightI = -1;
+
+                        // left loop start matchPrecentage
+                        for (let leftI = 0; leftI < leftList.length; leftI++) {
+                            if (!leftLoop) {
+                                break;
+                            }
+                            const left = leftList[leftI];
+                            // right loop starts
+                            for (let rightI = 0; rightI < rightList.length; rightI++) {
+                                const right = rightList[rightI];
+                                
+                                if (left.text == right.text) {
+
+                                    const changedLeft = leftList.slice(0, leftI);
+                                    // this removed class or updated 
+                                    changedLeft.forEach((changedL) => {
+                                        // html change
+                                        if (changedL.class == '') {
+                                            changedL.class = 'bg-danger text-white removed';
+                                            changedL.status = 'removed';
+                                        }
+                                    });
+
+                                    const changedRight = rightList.slice(0, rightI);
+                                    changedRight.forEach((changedR) => {
+                                        // html change
+                                        if (changedR.class == '') {
+                                          changedR.class = 'bg-success text-white added';
+                                          changedR.status = 'added';
+                                        }
+                                    });                                  
+                                    
+                                    // set value of global lastRightI
+                                    lastRightI = rightI + index2;
+                                    if (difObj.arrFile2.length > (lastRightI+1)){
+                                      // there are more items to last stop point
+                                      lastRightI += 1;
+                                    } else {
+                                      // last matched item is last item in right array no remanings
+                                      lastRightI = -1;
+                                    }
+
+                                    status = 'removed_updated';
+                                    // html class (no changed added without check)
+                                    left.class = 'no_changed';
+                                    right.class = 'no_changed';
+                                    // coding status, title
+                                    left.status = 'no change';
+                                    right.status = 'no change';
+                                    leftLoop = false;
+                                    break;
+
+                                }  else if (matchPrecentage(left.text,right.text) >= 50) {
+                                   alert("found one");
+                                    left.class = 'bg-warning';
+                                    right.class = 'bg-warning';
+                                    // coding status, title
+                                    left.status = 'updated';
+                                    right.status = 'updated';
+
+                                } else {
+
+                                }
+                            }
+                            // right loop ends
+                            
+                            // if right loop completed and not found match for left item make it class removed
+                            if (left.class == ''){
+                              left.class = 'bg-danger text-white removed';
+                              left.status = 'removed';
+                              status = 'removed_updated';
+                            }
+                        }
+                        // left loop end
+
+                        // if left loop ends check if any item in right list not have class, so it added
+                        for (let i2 = 0; i2 < rightList.length; i2++) {
+                            if (rightList[i2].class == ''){
+                              rightList[i2].class = 'bg-success text-white added';
+                              rightList[i2].status = 'added';
+                            }
+                        }
+
+                        return {status,lastRightI};
+    },
+    checkDif: () => {
+        if (difObj.file1Ready && difObj.file2Ready) {
+
+            difObj.filTexts();
+            // delete
+            let status = 'no_changed';
+            let lastRightI = -1;
+            for (let index1 = 0; index1 < difObj.arrFile1.length; index1++) {
+
+                const line1 = difObj.arrFile1[index1];                
+                if (difObj.arrFile2.length > index1) {
+                    // there are line on left array not have equal line in new array happed after all check done
+                    const line2 = difObj.arrFile2[index1];
+
+                    if (line1.text == line2.text) {
+                        // line with same index have same texts
+                        status = 'no_changed';
+                        line1.class = 'no_changed';
+                        line2.class = 'no_changed';
+
+                        line1.status = 'no change';
+                        line2.status = 'no change';
+
+                    } else {
+                        /* lines with same index not have same text not the check algo here to know the status */
+                        const checkData = difObj.nestedLoopCheck(index1);
+                        status = checkData['status'];
+                        lastRightI = checkData['lastRightI'];                        alert(difObj.arrFile1[index1].text+status);
+                        console.log('line1.text + status', line1.text + status);
+                    }
+
+                } else {
+
+                    if (lastRightI >= 0 && lastRightI < difObj.arrFile2.length){
+                      // here last stop rightR not equal to index1 less than it
+                      const checkData = difObj.nestedLoopCheck(index1,lastRightI);
+                      status = checkData['status'];
+                      lastRightI = checkData['lastRightI'];
+                      
+                      
+                    } else {
+                       // no remanings items in right list to match
+                       if (line1.class == '') {
+                           line1.class = 'bg-danger text-white removed';
+                           line1.status = 'removed';
+                       }
+                    }
+
+                }
+                
+
+            }
+
+            // for perfromance final after all check complete of let list, make check right list to set added
+            /*
+            for (let i2 = 0; i2 < difObj.arrFile2.length; i2++) {
+              if (difObj.arrFile2[i2].class == ''){
+                difObj.arrFile2[i2].class = 'bg-success text-white added';
+              }
+            }
+            */
+
+
+            difObj.loadLines(1);
+            difObj.loadLines(2);
+            if ($("#deleted").length && $("#added").length) {
+                $("#deleted").text(difObj.totalDeleted);
+                $("#added").text(difObj.totalAdded);
+            }
+        }
+    }
+}
+
+difObj.setArr(1);
+difObj.setArr(2);
+difObj.loadLines(1);
+difObj.loadLines(2);
+//console.log(difObj.arrFile1);
+difObj.checkDif();
+</script>
+
+</body>
+</html>
